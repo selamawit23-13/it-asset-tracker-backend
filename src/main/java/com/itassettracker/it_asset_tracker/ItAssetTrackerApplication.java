@@ -1,0 +1,13 @@
+package com.itassettracker.it_asset_tracker;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ItAssetTrackerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ItAssetTrackerApplication.class, args);
+	}
+
+}

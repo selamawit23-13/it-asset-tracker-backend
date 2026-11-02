@@ -1,0 +1,13 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+.idea/
+.vscode/
+*.iml
+
+.env
+.env.*
+!.env.example
+
+docker-error.txt

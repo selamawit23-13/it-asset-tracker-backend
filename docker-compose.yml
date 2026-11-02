@@ -1,0 +1,50 @@
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: asset-tracker-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: asset_tracker
+      POSTGRES_USER: asset_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your environment}
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - asset-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U asset_user -d asset_tracker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: asset-tracker-app
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/asset_tracker
+      SPRING_DATASOURCE_USERNAME: asset_user
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      APP_ADMIN_USERNAME: ${APP_ADMIN_USERNAME:?Set APP_ADMIN_USERNAME in .env}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:?Set APP_ADMIN_PASSWORD in .env}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - asset-network
+
+volumes:
+  postgres_data:
+
+networks:
+  asset-network:
+    driver: bridge
+
